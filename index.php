@@ -239,7 +239,7 @@ body {
             while ($product = $result->fetch_assoc()): 
                 $delay += 0.06;
                 // PULL IMAGE FROM DATABASE (image column contains filename)
-                $img = "images/" . $product['image'];
+                $img = productImage($product['image'], $product['name'], $product['price']);
                 $isLow = $product['stock'] > 0 && $product['stock'] < 10;
                 $isSoldOut = $product['stock'] <= 0;
             ?>

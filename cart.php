@@ -176,7 +176,7 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
                         $img = productImage($item['image'], $item['name'], $item['price']);
                     ?>
                         <tr>
-                            <td><img src="<?php echo $img; ?>" class="product-thumb" alt=""></td>
+                            <td><img src="<?php echo htmlspecialchars($img); ?>" class="product-thumb" alt=""></td>
                             <td><strong><?php echo htmlspecialchars($item['name']); ?></strong></td>
                             <td>$<?php echo number_format($item['price'], 2); ?></td>
                             <td><input type="number" name="quantities[<?php echo $item['id']; ?>]" value="<?php echo $item['quantity']; ?>" min="1" max="<?php echo $item['stock']; ?>" class="qty-input"></td>

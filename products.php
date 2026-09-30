@@ -18,7 +18,7 @@ $result = $conn->query("SELECT id, name, price, image FROM products");
     <div style="display:inline-block; margin:20px; text-align:center;">
 
         <img 
-            src="images/<?php echo htmlspecialchars($product['image']); ?>"
+            src="<?php echo htmlspecialchars(productImage($product['image'], $product['name'], $product['price'])); ?>"
             width="200"
             height="200"
             style="object-fit:cover;"
