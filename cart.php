@@ -83,18 +83,18 @@ if (!empty($_SESSION['cart'])) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cart — Glow Skin</title>
+<title>Cart — K-beauty</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23c4ff4d'/></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Manrope:wght@300;400;500;600;700;800&display=swap');
 :root{--ink:#0e0e0e;--ink-soft:#2a2a2a;--smoke:#6b6b6b;--mist:#a8a8a8;--cloud:#e8e6e1;--paper:#f5f3ef;--paper-light:#fbfaf8;--white:#fff;--accent:#c4ff4d;--accent-dark:#a8e035;--coral:#ff7a5c;--coral-dark:#e85a3a;--radius-sm:8px;--radius:20px;--radius-lg:32px;--radius-full:999px;--ease:cubic-bezier(.22,1,.36,1);--transition:all .5s var(--ease)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Manrope',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
+body{font-family:'Manrope',system-ui,sans-serif;background:#eed8e5;color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
 h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.03em;line-height:1.05}
 .navbar{position:sticky;top:0;z-index:1000;background:rgba(245,243,239,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(14,14,14,.06)}
-.nav-container{max-width:1440px;margin:0 auto;padding:1.25rem 2.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.nav-container{max-width:1440px;margin:0 auto;padding:.8rem 2.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
 .logo{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--ink);text-decoration:none;letter-spacing:-.04em;display:flex;align-items:center;gap:.4rem}
-.logo::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%;display:inline-block}
+.logo::before{content:'';width:8px;height:8px;background:#E8B4C0;border-radius:50%;display:inline-block}
 .nav-links{display:flex;gap:.25rem;align-items:center;flex-wrap:wrap}
 .nav-links a{color:var(--ink);text-decoration:none;font-weight:500;font-size:.875rem;padding:.6rem 1.1rem;border-radius:var(--radius-full);transition:var(--transition)}
 .nav-links a:hover{background:var(--ink);color:var(--paper)}
@@ -140,7 +140,7 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
 <body>
 <nav class="navbar">
     <div class="nav-container">
-        <a href="index.php" class="logo">Glow Skin</a>
+        <a href="index.php" class="logo">K-beauty</a>
         <div class="nav-links">
             <a href="index.php">Shop</a>
             <a href="about.php">About</a>
@@ -178,9 +178,9 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
                         <tr>
                             <td><img src="<?php echo htmlspecialchars($img); ?>" class="product-thumb" alt=""></td>
                             <td><strong><?php echo htmlspecialchars($item['name']); ?></strong></td>
-                            <td>$<?php echo number_format($item['price'], 2); ?></td>
+                            <td>Rs. <?php echo number_format($item['price'], 2); ?></td>
                             <td><input type="number" name="quantities[<?php echo $item['id']; ?>]" value="<?php echo $item['quantity']; ?>" min="1" max="<?php echo $item['stock']; ?>" class="qty-input"></td>
-                            <td><strong>$<?php echo number_format($item['subtotal'], 2); ?></strong></td>
+                            <td><strong>Rs. <?php echo number_format($item['subtotal'], 2); ?></strong></td>
                             <td><a href="cart.php?remove=<?php echo $item['id']; ?>" class="btn btn-sm btn-danger">Remove</a></td>
                         </tr>
                     <?php endforeach; ?>
@@ -188,7 +188,7 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
                 <tfoot>
                     <tr>
                         <td colspan="4" class="text-right"><strong>Total</strong></td>
-                        <td colspan="2"><strong style="font-family:'Fraunces',serif;font-size:1.5rem">$<?php echo number_format($total, 2); ?></strong></td>
+                        <td colspan="2"><strong style="font-family:'Fraunces',serif;font-size:1.5rem">Rs. <?php echo number_format($total, 2); ?></strong></td>
                     </tr>
                 </tfoot>
             </table>

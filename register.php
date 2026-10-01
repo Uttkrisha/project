@@ -28,11 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result->num_rows > 0) {
             $error = 'Username or email already exists';
         } else {
+        
             $hashed = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'customer')");
             $stmt->bind_param("sss", $username, $email, $hashed);
             if ($stmt->execute()) {
-                $success = 'Welcome to Glow Skin! You can now sign in.';
+                $success = 'Welcome to K-beauty! You can now sign in.';
             } else {
                 $error = 'Registration failed. Please try again.';
             }

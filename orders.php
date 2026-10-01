@@ -16,12 +16,12 @@ $result = $conn->query("SELECT * FROM orders WHERE user_id = $user_id ORDER BY c
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Manrope:wght@300;400;500;600;700;800&display=swap');
 :root{--ink:#0e0e0e;--ink-soft:#2a2a2a;--smoke:#6b6b6b;--mist:#a8a8a8;--cloud:#e8e6e1;--paper:#f5f3ef;--paper-light:#fbfaf8;--white:#fff;--accent:#c4ff4d;--accent-dark:#a8e035;--coral:#ff7a5c;--coral-dark:#e85a3a;--radius-sm:8px;--radius:20px;--radius-lg:32px;--radius-full:999px;--ease:cubic-bezier(.22,1,.36,1);--transition:all .5s var(--ease)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Manrope',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+body{font-family:'Manrope',system-ui,sans-serif;background:#eed8e5;color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.03em;line-height:1.05}
 .navbar{position:sticky;top:0;z-index:1000;background:rgba(245,243,239,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(14,14,14,.06)}
 .nav-container{max-width:1440px;margin:0 auto;padding:1.25rem 2.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
 .logo{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--ink);text-decoration:none;letter-spacing:-.04em;display:flex;align-items:center;gap:.4rem}
-.logo::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%;display:inline-block}
+.logo::before{content:'';width:8px;height:8px;background: #E8B4C0;border-radius:50%;display:inline-block}
 .nav-links{display:flex;gap:.25rem;align-items:center;flex-wrap:wrap}
 .nav-links a{color:var(--ink);text-decoration:none;font-weight:500;font-size:.875rem;padding:.6rem 1.1rem;border-radius:var(--radius-full);transition:var(--transition)}
 .nav-links a:hover{background:var(--ink);color:var(--paper)}
@@ -65,7 +65,7 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
 <body>
 <nav class="navbar">
     <div class="nav-container">
-        <a href="index.php" class="logo">Glow Skin</a>
+        <a href="index.php" class="logo">K-beauty</a>
         <div class="nav-links">
             <a href="index.php">Shop</a>
             <a href="about.php">About</a>
@@ -97,7 +97,7 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
                     <strong>Order #<?php echo $order['id']; ?></strong>
                     <span class="order-status status-<?php echo $order['status']; ?>"><?php echo ucfirst($order['status']); ?></span>
                     <span><?php echo date('M d, Y', strtotime($order['created_at'])); ?></span>
-                    <strong>$<?php echo number_format($order['total'], 2); ?></strong>
+                    <strong>Rs. <?php echo number_format($order['total'], 2); ?></strong>
                 </div>
                 <table class="order-items-table">
                     <thead><tr><th>Product</th><th>Quantity</th><th>Price</th><th>Subtotal</th></tr></thead>
@@ -110,8 +110,8 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
                             <tr>
                                 <td><?php echo htmlspecialchars($item['name']); ?></td>
                                 <td><?php echo $item['quantity']; ?></td>
-                                <td>$<?php echo number_format($item['price'], 2); ?></td>
-                                <td>$<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
+                                <td>Rs. <?php echo number_format($item['price'], 2); ?></td>
+                                <td>Rs. <?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
                             </tr>
                         <?php endwhile; ?>
                     </tbody>

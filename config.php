@@ -19,7 +19,6 @@ function redirect($url) {
     exit;
 }
 
-// Returns a usable image src: full URL, local images/ file, or a placeholder
 function productImage($image, $name = '', $price = 0) {
     $image = trim((string)$image);
     if (preg_match('#^https?://#i', $image)) return $image;

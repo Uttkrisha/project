@@ -81,6 +81,15 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
   .stats-strip{padding:2.5rem 1.5rem}
   .stat-num{font-size:2.2rem}
 }
+.story-visual-img{
+    position:absolute;
+    inset:0;                   
+    width:100%;
+    height:100%;
+    object-fit:cover;          
+    object-position:center;
+    z-index:1;
+}
 </style>
 </head>
 <body>
@@ -112,6 +121,7 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
 <div class="container">
     <div class="story-grid">
         <div class="story-visual">
+            <img src="images/about.jpg" alt="Our philosophy" class="story-visual-img">
             <div class="story-visual-text">"Clean ingredients.<br>Real results."</div>
         </div>
         <div class="story-content">

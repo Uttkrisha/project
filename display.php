@@ -10,7 +10,7 @@ $result = $conn->query("SELECT id, name, price FROM products ORDER BY id DESC");
 
 <?php while ($p = $result->fetch_assoc()): ?>
     <div style="display:inline-block;margin:1rem;text-align:center">
-        <!-- Pull image bytes from DB via serve_image.php -->
+    
         <img src="serve_image.php?id=<?php echo $p['id']; ?>" 
              alt="<?php echo htmlspecialchars($p['name']); ?>"
              style="width:200px;height:200px;object-fit:cover;border-radius:12px">

@@ -23,7 +23,7 @@ $items = $conn->query("SELECT oi.*, p.name FROM order_items oi JOIN products p O
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Order Confirmed — Glow Skin</title>
+<title>Order Confirmed — K-beauty</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23c4ff4d'/></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Manrope:wght@300;400;500;600;700;800&display=swap');
@@ -32,9 +32,9 @@ $items = $conn->query("SELECT oi.*, p.name FROM order_items oi JOIN products p O
 body{font-family:'Manrope',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.03em;line-height:1.05}
 .navbar{position:sticky;top:0;z-index:1000;background:rgba(245,243,239,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(14,14,14,.06)}
-.nav-container{max-width:1440px;margin:0 auto;padding:1.25rem 2.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.nav-container{max-width:1440px;margin:0 auto;padding:.8rem 2.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
 .logo{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--ink);text-decoration:none;letter-spacing:-.04em;display:flex;align-items:center;gap:.4rem}
-.logo::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%;display:inline-block}
+.logo::before{content:'';width:8px;height:8px;background:#E8B4C0;border-radius:50%;display:inline-block}
 .nav-links{display:flex;gap:.25rem;align-items:center;flex-wrap:wrap}
 .nav-links a{color:var(--ink);text-decoration:none;font-weight:500;font-size:.875rem;padding:.6rem 1.1rem;border-radius:var(--radius-full);transition:var(--transition)}
 .nav-links a:hover{background:var(--ink);color:var(--paper)}
@@ -71,7 +71,7 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
 <body>
 <nav class="navbar">
     <div class="nav-container">
-        <a href="index.php" class="logo">Glow Skin</a>
+        <a href="index.php" class="logo">K-beauty</a>
         <div class="nav-links">
             <a href="index.php">Shop</a>
             <a href="about.php">About</a>
@@ -98,12 +98,12 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
         <?php while ($item = $items->fetch_assoc()): ?>
             <div class="item-row">
                 <span><?php echo htmlspecialchars($item['name']); ?> × <?php echo $item['quantity']; ?></span>
-                <strong>$<?php echo number_format($item['price'] * $item['quantity'], 2); ?></strong>
+                <strong>Rs. <?php echo number_format($item['price'] * $item['quantity'], 2); ?></strong>
             </div>
         <?php endwhile; ?>
         <div class="total-row">
             <span>Total</span>
-            <span>$<?php echo number_format($order['total'], 2); ?></span>
+            <span>Rs.<?php echo number_format($order['total'], 2); ?></span>
         </div>
     </div>
 

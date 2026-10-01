@@ -153,7 +153,18 @@ body {
   .hero-visual{height:320px}
   .hero-visual-text{font-size:1.25rem;bottom:1.5rem;left:1.5rem;right:1.5rem}
   .hero-visual-badge{top:1rem;right:1rem;padding:.5rem .9rem;font-size:.65rem}
-  .hero-visual-shape{display:none}
+  .hero-visual-img{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:auto;
+    height:auto;
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+    z-index:1;
+}
   .product-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem 1rem}
   .section-count{display:none}
   .search-input{max-width:100%}
@@ -194,8 +205,7 @@ body {
     </div>
     <div class="hero-visual">
         <span class="hero-visual-badge">★ Best Sellers</span>
-        <div class="hero-visual-shape shape-1"></div>
-        <div class="hero-visual-shape shape-2"></div>
+        <img src="images/hero.jpg" alt="Featured skincare" class="hero-visual-img">
         <div class="hero-visual-text">"Skincare is a moment for yourself."</div>
     </div>
 </section>
@@ -238,7 +248,7 @@ body {
             $delay = 0;
             while ($product = $result->fetch_assoc()): 
                 $delay += 0.06;
-                // PULL IMAGE FROM DATABASE (image column contains filename)
+            
                 $img = productImage($product['image'], $product['name'], $product['price']);
                 $isLow = $product['stock'] > 0 && $product['stock'] < 10;
                 $isSoldOut = $product['stock'] <= 0;
