@@ -16,12 +16,6 @@ if ($category !== '') {
 $result = $conn->query("SELECT * FROM products WHERE $where ORDER BY created_at DESC");
 $total_products = $result->num_rows;
 
-$reviews_by_product = [];
-$review_rows = $conn->query("SELECT r.product_id, r.review, u.username FROM product_review r JOIN users u ON r.user_id = u.id ORDER BY r.id DESC");
-while ($rv = $review_rows->fetch_assoc()) {
-    $reviews_by_product[$rv['product_id']][] = $rv;
-}
-
 $categories =$conn->query("SELECT DISTINCT category FROM products WHERE category != '' ORDER BY category");
 ?>
 <!DOCTYPE html>
@@ -123,10 +117,6 @@ body {
 .categories{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem}
 .categories a{padding:.5rem 1rem;border:1.5px solid var(--ink);border-radius:var(--radius-full);color:var(--ink);text-decoration:none;font-size:.8rem;font-weight:600}
 .categories a.active,.categories a:hover{background:var(--ink);color:var(--paper)}
-#product-modal{margin:auto;padding:1.5rem;border:none;border-radius:var(--radius);width:min(420px,90vw)}
-#product-modal::backdrop{background:rgba(0,0,0,.5)}
-#product-modal img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:1rem}
-#m-form{display:flex;gap:.5rem}
 .qty-input{width:56px;padding:.7rem .4rem;border:1.5px solid var(--cloud);border-radius:var(--radius-sm);font-size:.9rem;font-family:inherit;text-align:center;transition:var(--transition);background:var(--white);font-weight:500}
 .qty-input:focus{outline:none;border-color:var(--ink)}
 
@@ -278,15 +268,7 @@ body {
                 $isLow = $product['stock'] > 0 && $product['stock'] < 10;
                 $isSoldOut = $product['stock'] <= 0;
             ?>
-                <div class="product-card" style="animation-delay: <?php echo $delay; ?>s; cursor:pointer"
-                     data-id="<?php echo $product['id']; ?>"
-                     data-name="<?php echo htmlspecialchars($product['name']); ?>"
-                     data-description="<?php echo htmlspecialchars($product['description']); ?>"
-                     data-category="<?php echo htmlspecialchars($product['category']); ?>"
-                     data-price="<?php echo number_format($product['price'], 2); ?>"
-                     data-stock="<?php echo $product['stock']; ?>"
-                     data-image="<?php echo htmlspecialchars($img); ?>"
-                     onclick="openProduct(this)">
+                <a href="product.php?id=<?php echo $product['id']; ?>" class="product-card" style="animation-delay: <?php echo $delay; ?>s; text-decoration:none; color:inherit">
                     <div class="product-image">
                         <?php if ($isSoldOut): ?>
                             <span class="product-badge soldout">Sold Out</span>
@@ -299,11 +281,6 @@ body {
                         <?php else: ?>
                             <div class="no-image"><?php echo strtoupper(substr($product['name'], 0, 1)); ?></div>
                         <?php endif; ?>
-                    </div>
-                    <div class="card-reviews" style="display:none">
-                        <?php foreach ($reviews_by_product[$product['id']] ?? [] as $rv): ?>
-                            <p><strong><?php echo htmlspecialchars($rv['username']); ?>:</strong> <?php echo htmlspecialchars($rv['review']); ?></p>
-                        <?php endforeach; ?>
                     </div>
                     <div class="product-info">
                         <h3><?php echo htmlspecialchars($product['name']); ?></h3>
@@ -319,59 +296,11 @@ body {
                             </span>
                         </div>
                     </div>
-                </div>
+                </a>
             <?php endwhile; ?>
         </div>
     <?php endif; ?>
 </div>
-
-<dialog id="product-modal">
-    <img id="m-image" alt="">
-    <h2 id="m-name"></h2>
-    <p id="m-category" class="stock"></p>
-    <p id="m-description" style="margin:1rem 0"></p>
-    <p class="price">Rs. <span id="m-price"></span></p>
-    <p id="m-stock" class="stock" style="margin:.5rem 0 1rem"></p>
-    <form action="cart.php" method="POST" id="m-form">
-        <input type="hidden" name="product_id" id="m-id">
-        <input type="number" name="quantity" id="m-qty" value="1" min="1" class="qty-input">
-        <input type="hidden" name="add_to_cart" value="1">
-        <button type="submit" class="btn btn-secondary">Add to Cart</button>
-        <button type="submit" name="buy" value="1" class="btn btn-primary">Buy Now</button>
-    </form>
-    <h3 style="margin-top:1rem;font-size:1rem">Reviews</h3>
-    <div id="m-reviews" style="max-height:140px;overflow-y:auto;font-size:.85rem"></div>
-    <?php if (isLoggedIn()): ?>
-        <form action="review.php" method="POST" style="margin-top:1rem">
-            <input type="hidden" name="product_id" id="r-id">
-            <textarea name="review" maxlength="250" rows="2" placeholder="Write a review..." required style="width:100%"></textarea>
-            <button type="submit" class="btn btn-secondary" style="margin-top:.5rem">Submit Review</button>
-        </form>
-    <?php else: ?>
-        <p style="margin-top:1rem"><a href="login.php">Login</a> to write a review.</p>
-    <?php endif; ?>
-    <button type="button" class="btn btn-secondary" style="margin-top:.75rem" onclick="document.getElementById('product-modal').close()">Close</button>
-</dialog>
-
-<script>
-function openProduct(card) {
-    var d = card.dataset;
-    document.getElementById('m-id').value = d.id;
-    var reviews = card.querySelector('.card-reviews').innerHTML.trim();
-    document.getElementById('m-reviews').innerHTML = reviews || '<p>No reviews yet.</p>';
-    var rid =document.getElementById('r-id');
-    if (rid) rid.value = d.id;
-    document.getElementById('m-name').textContent = d.name;
-    document.getElementById('m-category').textContent = d.category;
-    document.getElementById('m-description').textContent = d.description;
-    document.getElementById('m-price').textContent = d.price;
-    document.getElementById('m-image').src = d.image;
-    document.getElementById('m-stock').textContent = d.stock > 0 ? d.stock + ' in stock' : 'Out of stock';
-    document.getElementById('m-qty').max = d.stock;
-    document.getElementById('m-form').style.display = d.stock > 0 ? 'flex' : 'none';
-    document.getElementById('product-modal').showModal();
-}
-</script>
 
 <footer class="footer">
     <div class="footer-inner">

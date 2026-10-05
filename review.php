@@ -19,4 +19,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['message'] = 'Thanks for your review';
     }
 }
-redirect('index.php');
+redirect('product.php?id=' . (int)$_POST['product_id']);
