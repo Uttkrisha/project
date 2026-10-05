@@ -1,19 +1,22 @@
 <?php
 require_once "config.php";
 
-$result = $conn->query("SELECT * FROM products ORDER BY id DESC");
-$total_products = $result->num_rows;
 $search = isset($_GET['q']) ? trim($_GET['q']) : '';
+$category = isset($_GET['category']) ? trim($_GET['category']) : '';
 
+$where = "1";
 if ($search !== '') {
     $s = $conn->real_escape_string($search);
-    $result = $conn->query("SELECT * FROM products 
-                            WHERE name LIKE '%$s%' OR description LIKE '%$s%' 
-                            ORDER BY created_at DESC");
-} else {
-    $result = $conn->query("SELECT * FROM products ORDER BY created_at DESC");
+    $where .= " AND (name LIKE '%$s%' OR description LIKE '%$s%')";
 }
+if ($category !== '') {
+    $c = $conn->real_escape_string($category);
+    $where .= " AND category = '$c'";
+}
+$result = $conn->query("SELECT * FROM products WHERE $where ORDER BY created_at DESC");
 $total_products = $result->num_rows;
+
+$categories = $conn->query("SELECT DISTINCT category FROM products WHERE category != '' ORDER BY category");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -111,7 +114,13 @@ body {
 .stock.low{color:var(--coral-dark)}
 .stock.low::before{content:'● ';animation:pulse 1.5s ease-in-out infinite}
 
-.add-form{display:flex;gap:.5rem;align-items:stretch}
+.categories{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem}
+.categories a{padding:.5rem 1rem;border:1.5px solid var(--ink);border-radius:var(--radius-full);color:var(--ink);text-decoration:none;font-size:.8rem;font-weight:600}
+.categories a.active,.categories a:hover{background:var(--ink);color:var(--paper)}
+#product-modal{margin:auto;padding:1.5rem;border:none;border-radius:var(--radius);width:min(420px,90vw)}
+#product-modal::backdrop{background:rgba(0,0,0,.5)}
+#product-modal img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:1rem}
+#m-form{display:flex;gap:.5rem}
 .qty-input{width:56px;padding:.7rem .4rem;border:1.5px solid var(--cloud);border-radius:var(--radius-sm);font-size:.9rem;font-family:inherit;text-align:center;transition:var(--transition);background:var(--white);font-weight:500}
 .qty-input:focus{outline:none;border-color:var(--ink)}
 
@@ -230,11 +239,21 @@ body {
                 <input type="text" name="q" placeholder="Search products..." 
                        value="<?php echo htmlspecialchars($search); ?>" class="search-input">
                 <button type="submit" class="search-btn">Search</button>
+                <?php if ($category !== ''): ?>
+                    <input type="hidden" name="category" value="<?php echo htmlspecialchars($category); ?>">
+                <?php endif; ?>
                 <?php if ($search !== ''): ?>
                     <a href="index.php" class="search-clear">Clear</a>
                 <?php endif; ?>
             </form>
         </div>
+    </div>
+
+    <div class="categories">
+        <a href="index.php" class="<?php echo $category === '' ? 'active' : ''; ?>">All</a>
+        <?php while ($cat = $categories->fetch_assoc()): ?>
+            <a href="index.php?category=<?php echo urlencode($cat['category']); ?>" class="<?php echo $category === $cat['category'] ? 'active' : ''; ?>"><?php echo htmlspecialchars($cat['category']); ?></a>
+        <?php endwhile; ?>
     </div>
 
     <?php if ($total_products === 0): ?>
@@ -253,7 +272,15 @@ body {
                 $isLow = $product['stock'] > 0 && $product['stock'] < 10;
                 $isSoldOut = $product['stock'] <= 0;
             ?>
-                <div class="product-card" style="animation-delay: <?php echo $delay; ?>s">
+                <div class="product-card" style="animation-delay: <?php echo $delay; ?>s; cursor:pointer"
+                     data-id="<?php echo $product['id']; ?>"
+                     data-name="<?php echo htmlspecialchars($product['name']); ?>"
+                     data-description="<?php echo htmlspecialchars($product['description']); ?>"
+                     data-category="<?php echo htmlspecialchars($product['category']); ?>"
+                     data-price="<?php echo number_format($product['price'], 2); ?>"
+                     data-stock="<?php echo $product['stock']; ?>"
+                     data-image="<?php echo htmlspecialchars($img); ?>"
+                     onclick="openProduct(this)">
                     <div class="product-image">
                         <?php if ($isSoldOut): ?>
                             <span class="product-badge soldout">Sold Out</span>
@@ -280,21 +307,45 @@ body {
                                 ?>
                             </span>
                         </div>
-                        <?php if ($product['stock'] > 0): ?>
-                            <form action="cart.php" method="POST" class="add-form">
-                                <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                                <input type="number" name="quantity" value="1" min="1" max="<?php echo $product['stock']; ?>" class="qty-input">
-                                <button type="submit" name="add_to_cart" class="btn btn-primary">Add to Cart</button>
-                            </form>
-                        <?php else: ?>
-                            <button class="btn btn-disabled" disabled>Out of Stock</button>
-                        <?php endif; ?>
                     </div>
                 </div>
             <?php endwhile; ?>
         </div>
     <?php endif; ?>
 </div>
+
+<dialog id="product-modal">
+    <img id="m-image" alt="">
+    <h2 id="m-name"></h2>
+    <p id="m-category" class="stock"></p>
+    <p id="m-description" style="margin:1rem 0"></p>
+    <p class="price">Rs. <span id="m-price"></span></p>
+    <p id="m-stock" class="stock" style="margin:.5rem 0 1rem"></p>
+    <form action="cart.php" method="POST" id="m-form">
+        <input type="hidden" name="product_id" id="m-id">
+        <input type="number" name="quantity" id="m-qty" value="1" min="1" class="qty-input">
+        <input type="hidden" name="add_to_cart" value="1">
+        <button type="submit" class="btn btn-secondary">Add to Cart</button>
+        <button type="submit" name="buy" value="1" class="btn btn-primary">Buy Now</button>
+    </form>
+    <button type="button" class="btn btn-secondary" style="margin-top:.75rem" onclick="document.getElementById('product-modal').close()">Close</button>
+</dialog>
+
+<script>
+function openProduct(card) {
+    var d = card.dataset;
+    document.getElementById('m-id').value = d.id;
+    document.getElementById('m-name').textContent = d.name;
+    document.getElementById('m-category').textContent = d.category;
+    document.getElementById('m-description').textContent = d.description;
+    document.getElementById('m-price').textContent = d.price;
+    document.getElementById('m-image').src = d.image;
+    document.getElementById('m-stock').textContent = d.stock > 0 ? d.stock + ' in stock' : 'Out of stock';
+    document.getElementById('m-qty').max = d.stock;
+    document.getElementById('m-form').style.display = d.stock > 0 ? 'flex' : 'none';
+    document.getElementById('product-modal').showModal();
+}
+</script>
 
 <footer class="footer">
     <div class="footer-inner">

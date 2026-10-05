@@ -9,6 +9,7 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create'])) {
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
+    $category = trim($_POST['category']);
     $price = (float)$_POST['price'];
     $stock = (int)$_POST['stock'];
     $image = 'serum';
@@ -40,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create'])) {
         }
 
         if (empty($error)) {
-            $stmt = $conn->prepare("INSERT INTO products (name, description, price, stock, image) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssdis", $name, $description, $price, $stock, $image);
+            $stmt = $conn->prepare("INSERT INTO products (name, description, category, price, stock, image) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssdis", $name, $description, $category, $price, $stock, $image);
             if ($stmt->execute()) $success = 'Product created successfully';
             else $error = 'Failed to create product';
             $stmt->close();
@@ -54,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
     $id = (int)$_POST['id'];
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
+    $category = trim($_POST['category']);
     $price = (float)$_POST['price'];
     $stock = (int)$_POST['stock'];
 
@@ -72,11 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
         }
 
         if ($newImage !== null) {
-            $stmt = $conn->prepare("UPDATE products SET name=?, description=?, price=?, stock=?, image=? WHERE id=?");
-            $stmt->bind_param("ssdisi", $name, $description, $price, $stock, $newImage, $id);
+            $stmt = $conn->prepare("UPDATE products SET name=?, description=?, category=?, price=?, stock=?, image=? WHERE id=?");
+            $stmt->bind_param("sssdisi", $name, $description, $category, $price, $stock, $newImage, $id);
         } else {
-            $stmt = $conn->prepare("UPDATE products SET name=?, description=?, price=?, stock=? WHERE id=?");
-            $stmt->bind_param("ssdii", $name, $description, $price, $stock, $id);
+            $stmt = $conn->prepare("UPDATE products SET name=?, description=?, category=?, price=?, stock=? WHERE id=?");
+            $stmt->bind_param("sssdii", $name, $description, $category, $price, $stock, $id);
         }
 
         if ($stmt->execute()) $success = 'Product updated successfully';
@@ -276,6 +278,10 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
                 <div class="form-group">
                     <label>Description</label>
                     <textarea name="description" rows="3"><?php echo $edit_product ? htmlspecialchars($edit_product['description']) : ''; ?></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" name="category" value="<?php echo $edit_product ? htmlspecialchars($edit_product['category']) : ''; ?>" placeholder="e.g. Serum" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group">

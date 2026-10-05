@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
         $_SESSION['cart'][$product_id] = min($current + $quantity, $row['stock']);
         $_SESSION['message'] = 'Added to your cart';
     }
-    redirect('cart.php');
+    redirect(isset($_POST['buy']) ? 'cart.php' : 'index.php');
 }
 
 if (isset($_GET['remove'])) { unset($_SESSION['cart'][(int)$_GET['remove']]); redirect('cart.php'); }
