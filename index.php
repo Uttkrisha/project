@@ -16,7 +16,13 @@ if ($category !== '') {
 $result = $conn->query("SELECT * FROM products WHERE $where ORDER BY created_at DESC");
 $total_products = $result->num_rows;
 
-$categories = $conn->query("SELECT DISTINCT category FROM products WHERE category != '' ORDER BY category");
+$reviews_by_product = [];
+$review_rows = $conn->query("SELECT r.product_id, r.review, u.username FROM product_review r JOIN users u ON r.user_id = u.id ORDER BY r.id DESC");
+while ($rv = $review_rows->fetch_assoc()) {
+    $reviews_by_product[$rv['product_id']][] = $rv;
+}
+
+$categories =$conn->query("SELECT DISTINCT category FROM products WHERE category != '' ORDER BY category");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -294,6 +300,11 @@ body {
                             <div class="no-image"><?php echo strtoupper(substr($product['name'], 0, 1)); ?></div>
                         <?php endif; ?>
                     </div>
+                    <div class="card-reviews" style="display:none">
+                        <?php foreach ($reviews_by_product[$product['id']] ?? [] as $rv): ?>
+                            <p><strong><?php echo htmlspecialchars($rv['username']); ?>:</strong> <?php echo htmlspecialchars($rv['review']); ?></p>
+                        <?php endforeach; ?>
+                    </div>
                     <div class="product-info">
                         <h3><?php echo htmlspecialchars($product['name']); ?></h3>
                         <p class="description"><?php echo htmlspecialchars($product['description']); ?></p>
@@ -328,6 +339,17 @@ body {
         <button type="submit" class="btn btn-secondary">Add to Cart</button>
         <button type="submit" name="buy" value="1" class="btn btn-primary">Buy Now</button>
     </form>
+    <h3 style="margin-top:1rem;font-size:1rem">Reviews</h3>
+    <div id="m-reviews" style="max-height:140px;overflow-y:auto;font-size:.85rem"></div>
+    <?php if (isLoggedIn()): ?>
+        <form action="review.php" method="POST" style="margin-top:1rem">
+            <input type="hidden" name="product_id" id="r-id">
+            <textarea name="review" maxlength="250" rows="2" placeholder="Write a review..." required style="width:100%"></textarea>
+            <button type="submit" class="btn btn-secondary" style="margin-top:.5rem">Submit Review</button>
+        </form>
+    <?php else: ?>
+        <p style="margin-top:1rem"><a href="login.php">Login</a> to write a review.</p>
+    <?php endif; ?>
     <button type="button" class="btn btn-secondary" style="margin-top:.75rem" onclick="document.getElementById('product-modal').close()">Close</button>
 </dialog>
 
@@ -335,6 +357,10 @@ body {
 function openProduct(card) {
     var d = card.dataset;
     document.getElementById('m-id').value = d.id;
+    var reviews = card.querySelector('.card-reviews').innerHTML.trim();
+    document.getElementById('m-reviews').innerHTML = reviews || '<p>No reviews yet.</p>';
+    var rid =document.getElementById('r-id');
+    if (rid) rid.value = d.id;
     document.getElementById('m-name').textContent = d.name;
     document.getElementById('m-category').textContent = d.category;
     document.getElementById('m-description').textContent = d.description;

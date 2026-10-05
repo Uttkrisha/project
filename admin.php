@@ -148,6 +148,7 @@ if (isset($_GET['edit'])) {
 
 $products = $conn->query("SELECT * FROM products ORDER BY created_at DESC");
 $orders = $conn->query("SELECT o.*, u.username FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC");
+$reviews = $conn->query("SELECT r.review, u.username, p.name FROM product_review r JOIN users u ON r.user_id = u.id JOIN products p ON r.product_id = p.id ORDER BY r.id DESC");
 $stats_products = $conn->query("SELECT COUNT(*) as c FROM products")->fetch_assoc()['c'];
 $stats_orders = $conn->query("SELECT COUNT(*) as c FROM orders")->fetch_assoc()['c'];
 $stats_users = $conn->query("SELECT COUNT(*) as c FROM users WHERE role='customer'")->fetch_assoc()['c'];
@@ -345,6 +346,26 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.0
             </table>
             </div>
         </div>
+    </div>
+
+    <div class="admin-card">
+        <h2>Reviews (<?php echo $reviews->num_rows; ?>)</h2>
+        <?php if ($reviews->num_rows === 0): ?>
+            <p style="color:var(--smoke);text-align:center;padding:2rem">No reviews yet</p>
+        <?php else: ?>
+        <table class="admin-table">
+            <thead><tr><th>Product</th><th>User</th><th>Review</th></tr></thead>
+            <tbody>
+                <?php while ($rv = $reviews->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($rv['name']); ?></td>
+                        <td><?php echo htmlspecialchars($rv['username']); ?></td>
+                        <td><?php echo htmlspecialchars($rv['review']); ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+        <?php endif; ?>
     </div>
 
     <div class="admin-card">
