@@ -88,8 +88,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
 /* ---------- DELETE PRODUCT ---------- */
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    $conn->query("DELETE FROM products WHERE id = $id");
-    $success = 'Product deleted';
+
+    try {
+        // Delete uploaded product image file if it exists
+        $img_stmt = $conn->prepare("SELECT image FROM products WHERE id = ?");
+        $img_stmt->bind_param("i", $id);
+        $img_stmt->execute();
+        $img_res = $img_stmt->get_result();
+        if ($img_row = $img_res->fetch_assoc()) {
+            $img_name = $img_row['image'];
+            $protected = ['hero.jpg', 'about.jpg', 'a.jpg', 'h.jpg', 'sss.png'];
+            if (!empty($img_name) && !in_array($img_name, $protected)) {
+                $file = __DIR__ . '/images/' . $img_name;
+                if (file_exists($file)) {
+                    @unlink($file);
+                }
+            }
+        }
+        $img_stmt->close();
+
+        // Delete referencing order items first to satisfy foreign key constraints
+        $stmt_items = $conn->prepare("DELETE FROM order_items WHERE product_id = ?");
+        $stmt_items->bind_param("i", $id);
+        $stmt_items->execute();
+        $stmt_items->close();
+
+        // Delete product from database
+        $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        if ($stmt->execute()) {
+            $success = 'Product deleted successfully from database';
+        } else {
+            $error = 'Failed to delete product';
+        }
+        $stmt->close();
+    } catch (Exception $e) {
+        $error = 'Failed to delete product: ' . $e->getMessage();
+    }
 }
 
 /* ---------- UPDATE ORDER STATUS ---------- */
